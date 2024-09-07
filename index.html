@@ -1,4 +1,3 @@
-<!-- THIS IS AN EXAMPLE PAGE AND SHOULD NOT BE USED OUTSIDE OF DEVELOPMENT -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -25,16 +24,21 @@
       }
 
       /* Custom styles for chat agent icon */
+      .voiceflow-chat-agent-icon, /* Ensure you inspect the actual class used */
       .chat-agent-icon {
-        background: none !important; /* Remove background */
-        border-radius: 0 !important; /* Remove the circular border */
-        overflow: hidden; /* Ensure no overflow of the image */
-        width: 80px; /* Set the size of the image */
-        height: 80px; /* Set the size of the image */
+        background-color: transparent !important; /* Force remove the background */
+        border: none !important; /* Remove the circular border */
+        width: 80px !important; /* Adjust size if necessary */
+        height: 80px !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
+
+      .voiceflow-chat-agent-icon img,
       .chat-agent-icon img {
-        width: 100%;
-        height: auto;
+        border-radius: 0 !important; /* Remove any radius that may be applied */
+        width: 100% !important; /* Ensure image takes full width */
+        height: auto !important;
       }
     </style>
   </head>
