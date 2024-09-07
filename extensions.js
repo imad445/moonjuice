@@ -11,42 +11,47 @@ export const FormExtension = {
     formContainer.innerHTML = `
           <style>
             label {
-              font-size: 0.8em;
-              color: #888;
+              font-size: 0.9em;
+              color: #555;
+              margin-bottom: 5px;
+              display: block;
             }
-            input[type="text"], input[type="email"], input[type="tel"] {
+            input[type="text"], input[type="email"] {
               width: 100%;
-              border: none;
-              border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
-              background: transparent;
-              margin: 5px 0;
+              padding: 8px;
+              border: 1px solid rgba(0, 0, 0, 0.1);
+              border-radius: 4px;
+              margin: 8px 0 16px 0;
               outline: none;
+              transition: border-color 0.3s ease;
             }
-            .phone {
-              width: 150px;
+            input[type="text"]:focus, input[type="email"]:focus {
+              border-color: #4caf50;
             }
             .invalid {
               border-color: red;
             }
             .submit {
-              background: linear-gradient(to right, #2e6ee1, #2e7ff1 );
+              background: linear-gradient(to right, #43a047, #66bb6a);
               border: none;
               color: white;
-              padding: 10px;
+              padding: 12px;
               border-radius: 5px;
               width: 100%;
               cursor: pointer;
+              font-size: 1em;
+              transition: background 0.3s ease;
+            }
+            .submit:hover {
+              background: linear-gradient(to right, #388e3c, #43a047);
             }
           </style>
 
           <label for="name">Name</label>
-          <input type="text" class="name" name="name" required><br><br>
+          <input type="text" class="name" name="name" required><br>
 
           <label for="email">Email</label>
-          <input type="email" class="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Invalid email address"><br><br>
-
-          <label for="phone">Phone Number</label>
-          <input type="tel" class="phone" name="phone" required pattern="\\d+" title="Invalid phone number, please enter only numbers"><br><br>
+          <input type="email" class="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Invalid email address"><br>
 
           <input type="submit" class="submit" value="Submit">
         `
@@ -56,16 +61,13 @@ export const FormExtension = {
 
       const name = formContainer.querySelector('.name')
       const email = formContainer.querySelector('.email')
-      const phone = formContainer.querySelector('.phone')
 
       if (
         !name.checkValidity() ||
-        !email.checkValidity() ||
-        !phone.checkValidity()
+        !email.checkValidity()
       ) {
         name.classList.add('invalid')
         email.classList.add('invalid')
-        phone.classList.add('invalid')
         return
       }
 
@@ -73,7 +75,7 @@ export const FormExtension = {
 
       window.voiceflow.chat.interact({
         type: 'complete',
-        payload: { name: name.value, email: email.value, phone: phone.value },
+        payload: { name: name.value, email: email.value },
       })
     })
 
