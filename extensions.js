@@ -39,7 +39,7 @@ export const FormExtension = {
           outline: none;
         }
         .submit {
-          background-color: #378d1a;
+          background-color: 378d1a;
           color: white;
           padding: 10px;
           border: none;
