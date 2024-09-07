@@ -530,3 +530,130 @@ export const FeedbackExtension = {
     element.appendChild(feedbackContainer)
   },
 }
+
+export const MultiOptionsExtension = {
+  name: 'MultiOptions',
+  type: 'response',
+  match: ({ trace }) =>
+    trace.type === 'ext_multioptions' || trace.payload.name === 'ext_multioptions',
+  render: ({ trace, element }) => {
+    const formContainer = document.createElement('form');
+
+    formContainer.innerHTML = `
+      <style>
+        form {
+          font-family: 'Helvetica Neue', sans-serif;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          max-width: 350px;
+          margin: auto;
+          transition: transform 0.3s ease;
+        }
+        form:hover {
+          transform: translateY(-5px);
+        }
+        .option {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+          padding: 8px;
+          border: 2px solid #ddd;
+          border-radius: 8px;
+          background-color: #f9f9f9;
+          transition: background-color 0.3s ease, border-color 0.3s ease;
+          cursor: pointer;
+          font-size: 0.8em;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .option.selected {
+          background-color: #378d1a;
+          border-color: #378d1a;
+        }
+        .option.selected label {
+          color: white;
+        }
+        .option label {
+          font-size: 1em;
+          color: #555;
+          margin-left: 10px;
+          transition: color 0.3s ease;
+        }
+        .error-message {
+          color: #378d1a;
+          font-size: 0.9em;
+          display: none;
+          text-align: center;
+          margin-top: 10px;
+        }
+        .form-header {
+          font-size: 1.4em;
+          color: #378d1a;
+          text-align: center;
+          margin-bottom: 20px;
+          font-weight: bold;
+        }
+      </style>
+
+      <div class="form-header">Where do you need the most help?</div>
+
+      <div class="options-container">
+        <div class="option" data-value="Brain fog">
+          <label>Brain fog</label>
+        </div>
+        <div class="option" data-value="Immunity">
+          <label>Immunity</label>
+        </div>
+        <div class="option" data-value="Hair">
+          <label>Hair</label>
+        </div>
+        <div class="option" data-value="Hydration">
+          <label>Hydration</label>
+        </div>
+        <div class="option" data-value="Bloating/Constipation">
+          <label>Bloating/Constipation</label>
+        </div>
+        <div class="option" data-value="Sleep">
+          <label>Sleep</label>
+        </div>
+        <div class="option" data-value="Metabolism">
+          <label>Metabolism</label>
+        </div>
+        <div class="option" data-value="Hormonal balance/Libido">
+          <label>Hormonal balance/Libido</label>
+        </div>
+        <div class="option" data-value="Mood">
+          <label>Mood</label>
+        </div>
+        <div class="option" data-value="Skin">
+          <label>Skin</label>
+        </div>
+        <div class="option" data-value="Energy">
+          <label>Energy</label>
+        </div>
+        <div class="option" data-value="Mineralization">
+          <label>Mineralization</label>
+        </div>
+      </div>
+
+      <div class="error-message">Please select an option.</div>
+    `;
+
+    formContainer.querySelectorAll('.option').forEach(option => {
+      option.addEventListener('click', () => {
+        formContainer.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+
+        // Automatically proceed to the next step when an option is selected
+        window.voiceflow.chat.interact({
+          type: 'complete',
+          payload: { selectedOption: option.getAttribute('data-value') },
+        });
+      });
+    });
+
+    element.appendChild(formContainer);
+  },
+}
