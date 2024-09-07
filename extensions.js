@@ -7,78 +7,80 @@ export const FormExtension = {
     trace.type === 'ext_form' || trace.payload.name === 'ext_form',
   render: ({ trace, element }) => {
     const formContainer = document.createElement('form')
-
+    
     formContainer.innerHTML = `
-          <style>
-            label {
-              font-size: 0.9em;
-              color: #555;
-              margin-bottom: 5px;
-              display: block;
-            }
-            input[type="text"], input[type="email"] {
-              width: 100%;
-              padding: 8px;
-              border: 1px solid rgba(0, 0, 0, 0.1);
-              border-radius: 4px;
-              margin: 8px 0 16px 0;
-              outline: none;
-              transition: border-color 0.3s ease;
-            }
-            input[type="text"]:focus, input[type="email"]:focus {
-              border-color: #4caf50;
-            }
-            .invalid {
-              border-color: red;
-            }
-            .submit {
-              background: linear-gradient(to right, #43a047, #66bb6a);
-              border: none;
-              color: white;
-              padding: 12px;
-              border-radius: 5px;
-              width: 100%;
-              cursor: pointer;
-              font-size: 1em;
-              transition: background 0.3s ease;
-            }
-            .submit:hover {
-              background: linear-gradient(to right, #388e3c, #43a047);
-            }
-          </style>
-
-          <label for="name">Name</label>
-          <input type="text" class="name" name="name" required><br>
-
-          <label for="email">Email</label>
-          <input type="email" class="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Invalid email address"><br>
-
-          <input type="submit" class="submit" value="Submit">
-        `
-
+      <style>
+        form {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          max-width: 300px;
+          margin: 0 auto;
+        }
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-size: 14px;
+          color: #333;
+        }
+        input[type="text"], input[type="email"] {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #378d1a;
+          border-radius: 20px;
+          box-sizing: border-box;
+          font-size: 14px;
+          transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="email"]:focus {
+          border-color: #378d1a;
+          outline: none;
+        }
+        .submit {
+          background-color: #378d1a;
+          color: white;
+          padding: 10px;
+          border: none;
+          border-radius: 20px;
+          width: 100%;
+          cursor: pointer;
+          font-size: 16px;
+          transition: opacity 0.3s;
+        }
+        .submit:hover {
+          opacity: 0.9;
+        }
+      </style>
+      
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+      
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+      
+      <button type="submit" class="submit">Submit</button>
+    `
+    
     formContainer.addEventListener('submit', function (event) {
       event.preventDefault()
-
-      const name = formContainer.querySelector('.name')
-      const email = formContainer.querySelector('.email')
-
-      if (
-        !name.checkValidity() ||
-        !email.checkValidity()
-      ) {
-        name.classList.add('invalid')
-        email.classList.add('invalid')
+      
+      const name = formContainer.querySelector('#name')
+      const email = formContainer.querySelector('#email')
+      
+      if (!name.checkValidity() || !email.checkValidity()) {
         return
       }
-
+      
       formContainer.querySelector('.submit').remove()
-
+      
       window.voiceflow.chat.interact({
         type: 'complete',
         payload: { name: name.value, email: email.value },
       })
     })
-
+    
     element.appendChild(formContainer)
   },
 }
