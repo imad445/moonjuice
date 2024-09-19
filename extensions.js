@@ -455,93 +455,134 @@ export const FeedbackExtension = {
   match: ({ trace }) =>
     trace.type === 'ext_feedback' || trace.payload.name === 'ext_feedback',
   render: ({ trace, element }) => {
-    const feedbackContainer = document.createElement('div')
+    const feedbackContainer = document.createElement('div');
 
     feedbackContainer.innerHTML = `
-          <style>
-            .vfrc-feedback {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
+      <style>
+        .feedback-container {
+          background-color: #ffffff;
+          padding: 16px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          width: 100%;
+          box-sizing: border-box;
+          font-family: sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .feedback-title {
+          font-size: 16px; /* Increased font size */
+          font-weight: bold; /* Match submit button font weight */
+          margin-bottom: 12px;
+          color: #333;
+          text-align: center; /* Center align text */
+        }
+        .star-rating {
+          font-size: 24px; /* Increased star size */
+          color: #e0e0e0;
+          margin-bottom: 12px;
+          justify-content: center; /* Center align stars */
+          display: flex;
+        }
+        .star-rating .star {
+          display: inline-block;
+          margin: 0 8px; /* Add spacing between stars */
+        }
+        .star-rating .star.active {
+          color: #ffd700;
+        }
+        textarea {
+          width: 100%;
+          padding: 8px;
+          margin: 8px 0;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+          font-size: 14px;
+          box-sizing: border-box;
+          resize: none; /* Remove scrollbar */
+          height: 60px; /* Set fixed height */
+          font-family: inherit; /* Inherit font from container */
+        }
+        .submit-btn {
+          background-color: #6B4EFF;
+          color: white;
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: bold; /* Match title font weight */
+          width: 100%;
+          margin-top: 8px;
+        }
+      </style>
+      <div class="feedback-container">
+        <div class="feedback-title">Please give your feedback on our customer service:</div>
+        <div class="star-rating" id="starRating">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+        <textarea id="feedbackText" placeholder="Share your experience with us..."></textarea>
+        <button class="submit-btn" id="submitFeedback">Submit Feedback</button>
+      </div>
+    `;
 
-            .vfrc-feedback--description {
-                font-size: 0.8em;
-                color: grey;
-                pointer-events: none;
-            }
+    let selectedRating = 0;
 
-            .vfrc-feedback--buttons {
-                display: flex;
-            }
+    const starRating = feedbackContainer.querySelector('#starRating');
+    const stars = starRating.querySelectorAll('.star');
+    const feedbackText = feedbackContainer.querySelector('#feedbackText');
+    const submitButton = feedbackContainer.querySelector('#submitFeedback');
 
-            .vfrc-feedback--button {
-                margin: 0;
-                padding: 0;
-                margin-left: 0px;
-                border: none;
-                background: none;
-                opacity: 0.2;
-            }
+    function updateStars(rating) {
+      stars.forEach((star, index) => {
+        star.classList.toggle('active', index < rating);
+      });
+    }
 
-            .vfrc-feedback--button:hover {
-              opacity: 0.5; /* opacity on hover */
-            }
+    starRating.addEventListener('click', (event) => {
+      if (event.target.classList.contains('star')) {
+        selectedRating = parseInt(event.target.dataset.value);
+        updateStars(selectedRating);
+      }
+    });
 
-            .vfrc-feedback--button.selected {
-              opacity: 0.6;
-            }
+    starRating.addEventListener('mouseover', (event) => {
+      if (event.target.classList.contains('star')) {
+        updateStars(parseInt(event.target.dataset.value));
+      }
+    });
 
-            .vfrc-feedback--button.disabled {
-                pointer-events: none;
-            }
+    starRating.addEventListener('mouseout', () => {
+      updateStars(selectedRating);
+    });
 
-            .vfrc-feedback--button:first-child svg {
-                fill: none; /* color for thumb up */
-                stroke: none;
-                border: none;
-                margin-left: 6px;
-            }
+    submitButton.addEventListener('click', () => {
+      if (selectedRating === 0) {
+        alert('Please select a rating before submitting.');
+        return;
+      }
 
-            .vfrc-feedback--button:last-child svg {
-                margin-left: 4px;
-                fill: none; /* color for thumb down */
-                stroke: none;
-                border: none;
-                transform: rotate(180deg);
-            }
-          </style>
-          <div class="vfrc-feedback">
-            <div class="vfrc-feedback--description">Was this helpful?</div>
-            <div class="vfrc-feedback--buttons">
-              <button class="vfrc-feedback--button" data-feedback="1">${SVG_Thumb}</button>
-              <button class="vfrc-feedback--button" data-feedback="0">${SVG_Thumb}</button>
-            </div>
-          </div>
-        `
+      const feedback = {
+        rating: selectedRating,
+        comment: feedbackText.value.trim(),
+      };
 
-    feedbackContainer
-      .querySelectorAll('.vfrc-feedback--button')
-      .forEach((button) => {
-        button.addEventListener('click', function (event) {
-          const feedback = this.getAttribute('data-feedback')
-          window.voiceflow.chat.interact({
-            type: 'complete',
-            payload: { feedback: feedback },
-          })
+      console.log('Feedback submitted:', feedback);
 
-          feedbackContainer
-            .querySelectorAll('.vfrc-feedback--button')
-            .forEach((btn) => {
-              btn.classList.add('disabled')
-              if (btn === this) {
-                btn.classList.add('selected')
-              }
-            })
-        })
-      })
+      window.voiceflow.chat.interact({
+        type: 'complete',
+        payload: feedback,
+      });
 
-    element.appendChild(feedbackContainer)
+      feedbackContainer.innerHTML = '<p>Thank you for your feedback!</p>';
+    });
+
+    element.appendChild(feedbackContainer);
   },
 }
 
