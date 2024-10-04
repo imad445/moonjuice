@@ -766,3 +766,107 @@ export const MultiOptionsmood = {
     element.appendChild(formContainer);
   },
 }
+
+export const LocationExtension = {
+  name: 'LocationCapture',
+  type: 'response',
+  match: ({ trace }) =>
+    trace.type === 'ext_location' || trace.payload.name === 'ext_location',
+  render: ({ trace, element }) => {
+    const locationContainer = document.createElement('div');
+
+    locationContainer.innerHTML = `
+      <style>
+        .location-wrapper {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          max-width: 300px;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .get-location-btn {
+          background: linear-gradient(to right, #378d1a, #53d145);
+          color: white;
+          padding: 10px;
+          border: none;
+          border-radius: 20px;
+          width: 100%;
+          cursor: pointer;
+          font-size: 16px;
+          transition: opacity 0.3s;
+        }
+        .get-location-btn:hover {
+          opacity: 0.9;
+        }
+        .loading {
+          margin-top: 10px;
+          font-size: 14px;
+          color: #333;
+        }
+      </style>
+
+      <div class="location-wrapper">
+        <p>Click the button to share your location:</p>
+        <button class="get-location-btn">Share Location</button>
+        <div class="loading" style="display: none;">Retrieving location...</div>
+      </div>
+    `;
+
+    const button = locationContainer.querySelector('.get-location-btn');
+    const loadingMessage = locationContainer.querySelector('.loading');
+
+    button.addEventListener('click', function () {
+      loadingMessage.style.display = 'block';
+      button.style.display = 'none';
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            // Use the simple location capture method
+            let user_latitude = position.coords.latitude;
+            let user_longitude = position.coords.longitude;
+
+            // Send the location data to Voiceflow as part of the payload
+            window.voiceflow.chat.interact({
+              type: 'complete',
+              payload: {
+                latitude: user_latitude,
+                longitude: user_longitude,
+              },
+            });
+
+            // Displaying captured location for debugging
+            console.log(`Location captured: Latitude ${user_latitude}, Longitude ${user_longitude}`);
+
+            // Optional: Notify user or handle UI after capturing location
+            loadingMessage.style.display = 'none'; // Hide loading message
+            button.style.display = 'block'; // Show button again
+          },
+          function (error) {
+            alert('Unable to retrieve location. Please check your browser settings.');
+            loadingMessage.style.display = 'none'; // Hide loading message
+            button.style.display = 'block'; // Show button again
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by this browser.');
+        loadingMessage.style.display = 'none'; // Hide loading message
+        button.style.display = 'block'; // Show button again
+      }
+    });
+
+    element.appendChild(locationContainer);
+  },
+};
+
+// Usage example (this would be in your main script or wherever you handle Voiceflow events)
+window.voiceflow.chat.on('respond', (last_event) => {
+  if (last_event.payload && last_event.payload.latitude && last_event.payload.longitude) {
+    let user_latitude = last_event.payload.latitude;
+    let user_longitude = last_event.payload.longitude;
+    console.log(`Received location: Latitude ${user_latitude}, Longitude ${user_longitude}`);
+    // You can use user_latitude and user_longitude here as needed
+  }
+});
