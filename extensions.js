@@ -824,21 +824,32 @@ export const LocationExtension = {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function (position) {
-            // Use the simple location capture method
-            let user_latitude = position.coords.latitude;
-            let user_longitude = position.coords.longitude;
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-            // Send the location data to Voiceflow as part of the payload
-            window.voiceflow.chat.interact({
-              type: 'complete',
-              payload: {
-                latitude: user_latitude,
-                longitude: user_longitude,
+            // Send the location data to the webhook
+            fetch('https://hook.eu2.make.com/3jemfsmhmbpznm3ma8sf1ssr5ym0ynfe', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
               },
+              body: JSON.stringify({
+                lat: latitude,
+                lon: longitude,
+              }),
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Success:', data); // Handle success response if needed
+            })
+            .catch((error) => {
+              console.error('Error:', error);
             });
-
-            // Displaying captured location for debugging
-            console.log(`Location captured: Latitude ${user_latitude}, Longitude ${user_longitude}`);
 
             // Optional: Notify user or handle UI after capturing location
             loadingMessage.style.display = 'none'; // Hide loading message
@@ -859,4 +870,5 @@ export const LocationExtension = {
 
     element.appendChild(locationContainer);
   },
-}
+};
+
