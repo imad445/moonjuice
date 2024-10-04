@@ -859,14 +859,4 @@ export const LocationExtension = {
 
     element.appendChild(locationContainer);
   },
-};
-
-// Usage example (this would be in your main script or wherever you handle Voiceflow events)
-window.voiceflow.chat.on('respond', (last_event) => {
-  if (last_event.payload && last_event.payload.latitude && last_event.payload.longitude) {
-    let user_latitude = last_event.payload.latitude;
-    let user_longitude = last_event.payload.longitude;
-    console.log(`Received location: Latitude ${user_latitude}, Longitude ${user_longitude}`);
-    // You can use user_latitude and user_longitude here as needed
-  }
-});
+}

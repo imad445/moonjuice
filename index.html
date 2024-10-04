@@ -24,11 +24,11 @@
       }
 
       /* Custom styles for chat agent icon */
-      .voiceflow-chat-agent-icon, /* Ensure you inspect the actual class used */
+      .voiceflow-chat-agent-icon,
       .chat-agent-icon {
-        background-color: transparent !important; /* Force remove the background */
-        border: none !important; /* Remove the circular border */
-        width: 80px !important; /* Adjust size if necessary */
+        background-color: transparent !important;
+        border: none !important;
+        width: 80px !important;
         height: 80px !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -36,8 +36,8 @@
 
       .voiceflow-chat-agent-icon img,
       .chat-agent-icon img {
-        border-radius: 0 !important; /* Remove any radius that may be applied */
-        width: 100% !important; /* Ensure image takes full width */
+        border-radius: 0 !important;
+        width: 100% !important;
         height: auto !important;
       }
     </style>
@@ -93,6 +93,16 @@
                 FeedbackExtension,
               ],
             },
+          });
+
+          // Add the event listener for location capture
+          window.voiceflow.chat.on('respond', (last_event) => {
+            if (last_event.payload && last_event.payload.latitude && last_event.payload.longitude) {
+              let user_latitude = last_event.payload.latitude;
+              let user_longitude = last_event.payload.longitude;
+              console.log(`Received location: Latitude ${user_latitude}, Longitude ${user_longitude}`);
+              // You can use user_latitude and user_longitude here as needed
+            }
           });
         };
         v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
