@@ -22,24 +22,24 @@ export const FormExtension = {
           display: block;
           margin-bottom: 5px;
           font-size: 14px;
-          color: #333;
+          color: #190AD5;
         }
-        input[type="text"], input[type="email"] {
+        input[type="text"], input[type="email"], input[type="tel"], textarea {
           width: 100%;
           padding: 10px;
           margin-bottom: 15px;
-          border: 1px solid #378d1a;
+          border: 1px solid #190AD5;
           border-radius: 20px;
           box-sizing: border-box;
           font-size: 14px;
           transition: border-color 0.3s ease;
         }
-        input[type="text"]:focus, input[type="email"]:focus {
-          border-color: #378d1a;
+        input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus {
+          border-color: #190AD5;
           outline: none;
         }
         .submit {
-          background: linear-gradient(to right, #378d1a, #53d145);
+          background: linear-gradient(to right, #190AD5, #1a65d1);
           color: white;
           padding: 10px;
           border: none;
@@ -54,11 +54,17 @@ export const FormExtension = {
         }
       </style>
       
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" required>
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" required>
       
       <label for="email">Email</label>
       <input type="email" id="email" name="email" required>
+      
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required>
+      
+      <label for="comment">Comment</label>
+      <textarea id="comment" name="comment" rows="4" required></textarea>
       
       <button type="submit" class="submit">Submit</button>
     `
@@ -66,10 +72,12 @@ export const FormExtension = {
     formContainer.addEventListener('submit', function (event) {
       event.preventDefault()
       
-      const name = formContainer.querySelector('#name')
+      const fullname = formContainer.querySelector('#fullname')
       const email = formContainer.querySelector('#email')
+      const phone = formContainer.querySelector('#phone')
+      const comment = formContainer.querySelector('#comment')
       
-      if (!name.checkValidity() || !email.checkValidity()) {
+      if (!fullname.checkValidity() || !email.checkValidity() || !phone.checkValidity() || !comment.checkValidity()) {
         return
       }
       
@@ -77,7 +85,107 @@ export const FormExtension = {
       
       window.voiceflow.chat.interact({
         type: 'complete',
-        payload: { name: name.value, email: email.value },
+        payload: { 
+          fullname: fullname.value, 
+          email: email.value, 
+          phone: phone.value, 
+          comment: comment.value 
+        },
+      })
+    })
+    
+    element.appendChild(formContainer)
+  },
+  name: 'Forms',
+  type: 'response',
+  match: ({ trace }) =>
+    trace.type === 'ext_form' || trace.payload.name === 'ext_form',
+  render: ({ trace, element }) => {
+    const formContainer = document.createElement('form')
+    
+    formContainer.innerHTML = `
+      <style>
+        form {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          max-width: 300px;
+          margin: 0 auto;
+        }
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-size: 14px;
+          color: #190AD5;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], textarea {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #190AD5;
+          border-radius: 20px;
+          box-sizing: border-box;
+          font-size: 14px;
+          transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus {
+          border-color: #190AD5;
+          outline: none;
+        }
+        .submit {
+          background: linear-gradient(to right, #190AD5, #1a65d1);
+          color: white;
+          padding: 10px;
+          border: none;
+          border-radius: 20px;
+          width: 100%;
+          cursor: pointer;
+          font-size: 16px;
+          transition: opacity 0.3s;
+        }
+        .submit:hover {
+          opacity: 0.9;
+        }
+      </style>
+      
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" required>
+      
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+      
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required>
+      
+      <label for="comment">Comment</label>
+      <textarea id="comment" name="comment" rows="4" required></textarea>
+      
+      <button type="submit" class="submit">Submit</button>
+    `
+    
+    formContainer.addEventListener('submit', function (event) {
+      event.preventDefault()
+      
+      const fullname = formContainer.querySelector('#fullname')
+      const email = formContainer.querySelector('#email')
+      const phone = formContainer.querySelector('#phone')
+      const comment = formContainer.querySelector('#comment')
+      
+      if (!fullname.checkValidity() || !email.checkValidity() || !phone.checkValidity() || !comment.checkValidity()) {
+        return
+      }
+      
+      formContainer.querySelector('.submit').remove()
+      
+      window.voiceflow.chat.interact({
+        type: 'complete',
+        payload: { 
+          fullname: fullname.value, 
+          email: email.value, 
+          phone: phone.value, 
+          comment: comment.value 
+        },
       })
     })
     
